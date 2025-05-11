@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+mkdir -p $HOME/.ssh
+chmod 700 $HOME/.ssh
+
+array_keys=(
+"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGEVAjTbO92GVpd3faKEEjHffeNfBiNNpEA/q6MWuCMp stefano@PC-STEFANO"
+)
+
+for i in ${array_keys[@]}
+do
+        grep -q ${i} $HOME/.ssh/authorized_keys && continue
+        echo ${i} >> $HOME/.ssh/authorized_keys && echo added: ${i}
+done
+
+chmod 600 $HOME/.ssh/authorized_keys
