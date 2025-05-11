@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+IFS=$'\n'
 
 mkdir -p $HOME/.ssh
 chmod 700 $HOME/.ssh
