@@ -31,10 +31,8 @@ check_key(){
   done
 
   if grep -q ${@:2:1} ${HOME}/.ssh/authorized_keys; then
-    grep -q "${@:2:1}" ${HOME}/.ssh/authorized_keys && { 
-      printf "This key already exist:\n\t${@:2:1} \n";
-      grep --color "${@:2:1}" ${HOME}/.ssh/authorized_keys
-    }
+    printf "This key already exist:\n\t${@:2:1} \n";
+    return 2
   fi
 }
 export -f check_key
@@ -47,8 +45,8 @@ do
   K="${key[1]}"
   C="${key[2]}"
 
-  check_key "$T" "$K" "$C" && \
-    continue
+  check_key "$T" "$K" "$C" || \
+    continue;
 
   printf "${T} ${K} ${C}\n" >> ${HOME}/.ssh/authorized_keys && \
     printf "Added: ${T} ${K} ${C}\n"
