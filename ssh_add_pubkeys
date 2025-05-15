@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-[[ -n ${HOME} ]] || { printf  "WFT? where is your \$HOME!"; exit; }
-export IFS=$'\n'
 
+[[ -n ${HOME} ]] || { printf  "WFT? where is your \$HOME!"; exit; }
+
+export IFS=$'\n'
 export VALID_TYPES=(
 ssh-ed25519
 )
@@ -23,13 +24,17 @@ touch ${HOME}/.ssh/authorized_keys && \
 check_key(){
   for t in ${VALID_TYPES[@]}
   do
-    printf "${T}" | grep -q "${t}" || \
-      printf "Type: ${t} not vaild"
+    printf "${@:1:1}" | grep -q "${t}" || {
+      printf "Type: ${@:1:1} not vaild\n\t\"${@:1:1} ${@:2:1} ${@:3:1}\"\n";
+      continue;
+    }
   done
 
   if grep -q ${@:2:1} ${HOME}/.ssh/authorized_keys; then
-    grep -q "${@:2:1} ${@:3:1}$" ${HOME}/.ssh/authorized_keys && printf "The Key is already added\n" || \
-      printf "The Key ${@:2:1} is already added with a different comment:\n\t$(grep ${@:2:1} ${HOME}/.ssh/authorized_keys)\n"
+    grep -q "${@:2:1}" ${HOME}/.ssh/authorized_keys && { 
+      printf "This key already exist:\n\t${@:2:1} \n";
+      grep --color "${@:2:1}" ${HOME}/.ssh/authorized_keys
+    }
   fi
 }
 export -f check_key
@@ -42,10 +47,9 @@ do
   K="${key[1]}"
   C="${key[2]}"
 
-  check_key "$T" "$K" "$C"
-        grep -q "${K}" ${HOME}/.ssh/authorized_keys && \
-          continue
+  check_key "$T" "$K" "$C" && \
+    continue
 
-        printf "${T} ${K} ${C}" >> ${HOME}/.ssh/authorized_keys && \
-          printf "${i[@]}\n"
+  printf "${T} ${K} ${C}\n" >> ${HOME}/.ssh/authorized_keys && \
+    printf "Added: ${T} ${K} ${C}\n"
 done
